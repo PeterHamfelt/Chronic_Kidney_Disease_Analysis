@@ -13,8 +13,8 @@ COLUMN_LIST = ['age', 'bp', 'sg', 'al', 'su', 'rbc', 'pc', 'pcc', 'ba', 'bgr',
 
 TYPE_DICT = {
     'category': ['sg', 'al', 'su', 'rbc', 'pc', 'pcc', 'ba', 'htn', 'dm', 'cad', 'appet', 'pe', 'ane', 'class'],
-    'Int64': ['age', 'bp', 'bgr', 'pcv', 'wbcc'],
-    'Float64':['bu', 'sc', 'sod', 'pot', 'hemo', 'rbcc']
+    'int': ['age', 'bp', 'bgr', 'pcv', 'wbcc'],
+    'float':['bu', 'sc', 'sod', 'pot', 'hemo', 'rbcc']
 }
 
 
@@ -80,7 +80,7 @@ def cast_columns(df: pd.DataFrame) -> pd.DataFrame:
             df[TYPE_DICT['category']] = df[TYPE_DICT['category']].astype('category')
 
         else:
-            df[TYPE_DICT[columns_type]] = df[TYPE_DICT[columns_type]].astype(columns_type)
+            df[TYPE_DICT[columns_type]] = df[TYPE_DICT[columns_type]].astype(columns_type, errors='ignore')
     df.replace('<NA>', np.nan, inplace=True)
     return df
 
