@@ -1,3 +1,6 @@
+# Files in data file
+data/*
+
 # Editors
 .vscode/
 .idea/
