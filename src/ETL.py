@@ -68,12 +68,20 @@ def cast_columns(df: pd.DataFrame) -> pd.DataFrame:
     :param df: the original dataframe
     :return: the dataframe with the correct data types
     """
+
+
+    
     for columns_type in TYPE_DICT.keys():
+
         if columns_type == 'category':
-            df[TYPE_DICT['category']] = df[TYPE_DICT['category']].astype('str').astype('category')
+            df[TYPE_DICT['category']] = df[TYPE_DICT['category']].fillna(value=b'?', inplace=False)
+            for column in TYPE_DICT['category']:
+                df[column] = df[column].apply(lambda x:str(x)[2:-1])
+            df[TYPE_DICT['category']] = df[TYPE_DICT['category']].astype('category')
+
         else:
             df[TYPE_DICT[columns_type]] = df[TYPE_DICT[columns_type]].astype(columns_type)
-    df.replace('nan', pd.NA, inplace=True)
+    df.replace('<NA>', np.nan, inplace=True)
     return df
 
 def format_dataframe(df: pd.DataFrame) -> pd.DataFrame:
