@@ -1,0 +1,14 @@
+@relation test_format_file
+
+@attribute 'age' numeric
+@attribute 'bp'  numeric
+@attribute 'sg' {1.005,1.010,1.015,1.020,1.025}
+@attribute 'al' {0,1,2,3,4,5}  
+@attribute 'su' {0,1,2,3,4,5}  
+@attribute 'rbc' {normal,abnormal}
+@attribute 'pc' {normal,abnormal}
+
+@data
+48,80, 1.020,1,0,?,normal
+7,50,   1.020,4,0,?,normal
+62,80,,1.010,2,3,normal,normal

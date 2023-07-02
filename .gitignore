@@ -1,5 +1,5 @@
 # Files in data file
-data/*
+data/chronic_kidney_disease*
 
 # Editors
 .vscode/
