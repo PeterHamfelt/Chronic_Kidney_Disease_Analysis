@@ -9,7 +9,7 @@ from src import ETL_tool
 
 
 import unittest
-import os
+from os import remove
 from data.test import test_vars
 
 
@@ -32,7 +32,7 @@ class test_ETL(unittest.TestCase):
 
         with open("data/clean_test_format_file_input.arff","r") as f:
             output = f.readlines()
-        os.remove(output_file)
+        remove(output_file)
 
         self.assertEqual(output_file, "data/clean_test_format_file_input.arff")
         self.assertEqual(output, expected_output)
