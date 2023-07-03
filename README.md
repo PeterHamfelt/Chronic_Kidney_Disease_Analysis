@@ -1,15 +1,17 @@
 # Chronic Kidney Disease Analysis
  An application that can be used across biomedical data science projects. The dataset used for the proof of concept can help physicians better understand chronic kidney disease (CKD) using numerous measurements and biomarkers that have been collected. 
 
+
 ## Description
 
 This project is a display of what can be done with machine learning in order to make some analysis over data such as the Chronic Kidney Disease dataset.
+
 
 ## Getting Started
 
 ### Dependencies
 
-* python 3.11
+* python 3.10
 
 
 ### Installing
@@ -45,6 +47,13 @@ This project is a display of what can be done with machine learning in order to 
     ```
 
 * Download the chronic kidney disease dataset from [here](https://archive.ics.uci.edu/dataset/336/chronic+kidney+disease) and extract it so that the .arff files are directly in the data/ folder.
+
+* Unit testing
+This code has been partially programmed following the Test Driven Developement approach. Here is the command to launch the tests script.
+    ```bash
+    python -m unittest discover
+    ```
+
 
 ### Executing program
 
@@ -99,19 +108,16 @@ This project is a display of what can be done with machine learning in order to 
     y_pred = predictor.predict(test_data)
     ```
 
-* Unit testing
-This code has been partially programmed following the Test Driven Developement approach. Here is the command to launch the tests script.
-    ```bash
-    python -m unittest discover
-    ```
 
 ## Authors
 
 David Urban
 
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE.md file for details
+
 
 ## Acknowledgments
 
