@@ -3,7 +3,7 @@
 
 ## Description
 
-An in-depth paragraph about your project and overview of use.
+This project is a display of what can be done with machine learning in order to make some analysis over data such as the Chronic Kidney Disease dataset.
 
 ## Getting Started
 
@@ -48,18 +48,62 @@ An in-depth paragraph about your project and overview of use.
 
 ### Executing program
 
-* How to run the program
-* Step-by-step bullets
-```
-code blocks for commands
-```
+* import dependencies
 
-## Help
+    ```python
+    from src import ETL_tool as ETL
+    from sklearn.model_selection import train_test_split
+    from autogluon.tabular import TabularDataset, TabularPredictor
+    from pandas import DataFrame
+    ```
 
-Any advise for common problems or issues.
-```
-command to run if program contains helper info
-```
+* Extract Data
+
+    ```python
+    df = ETL.load_data("data/chronic_kidney_disease_full.arff")
+    ```
+
+* Prepare Data
+
+    ```python
+    df_train, df_test = train_test_split(df, test_size=0.33, random_state=1)
+    test_data = df_test.drop(['class'], axis=1)
+    ```
+
+* Train Models
+
+    ```python
+    predictor = TabularPredictor(label='class').fit(train_data=df_train, verbosity=2, presets='best_quality')
+    ```
+
+* Display Training statistics
+
+    ```python
+    predictor.fit_summary()
+    predictor.leaderboard(df_train, silent=True)
+    predictor.feature_importance(data=df_train)
+    ```
+
+* Model Prediction Test and evaluation
+
+    ```python
+    y_pred = predictor.predict(test_data)
+    df_pred = DataFrame(y_pred, columns=['class'])
+    predictor.evaluate(df_test)
+    ```
+
+* Use Pretrained Model
+
+    ```python
+    predictor = TabularPredictor.load("AutogluonModels/ag-20230702_213736/")
+    y_pred = predictor.predict(test_data)
+    ```
+
+* Unit testing
+This code has been partially programmed following the Test Driven Developement approach. Here is the command to launch the tests script.
+    ```bash
+    python -m unittest discover
+    ```
 
 ## Authors
 
