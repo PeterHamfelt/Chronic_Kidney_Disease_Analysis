@@ -1,3 +1,6 @@
+# Files in data file
+data/chronic_kidney_disease*
+
 # Editors
 .vscode/
 .idea/
