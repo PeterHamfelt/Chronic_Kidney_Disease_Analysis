@@ -50,6 +50,7 @@ This project is a display of what can be done with machine learning in order to 
 
 * Unit testing
 This code has been partially programmed following the Test Driven Developement approach. Here is the command to launch the tests script.
+
     ```bash
     python -m unittest discover
     ```
@@ -57,13 +58,23 @@ This code has been partially programmed following the Test Driven Developement a
 
 ### Executing program
 
+#### CKD Prediction
+
 * import dependencies
 
     ```python
     from src import ETL_tool as ETL
     from sklearn.model_selection import train_test_split
     from autogluon.tabular import TabularDataset, TabularPredictor
-    from pandas import DataFrame
+    from pandas import DataFrame, Series, merge
+    from sklearn.cluster import KMeans
+    import seaborn as sns
+    from autogluon.features import AutoMLPipelineFeatureGenerator
+    from matplotlib import pyplot as plt
+    import lightgbm as lgm
+    import numpy as np
+
+    set_option('display.max_columns', None)
     ```
 
 * Extract Data
@@ -90,7 +101,6 @@ This code has been partially programmed following the Test Driven Developement a
     ```python
     predictor.fit_summary()
     predictor.leaderboard(df_train, silent=True)
-    predictor.feature_importance(data=df_train)
     ```
 
 * Model Prediction Test and evaluation
@@ -108,6 +118,80 @@ This code has been partially programmed following the Test Driven Developement a
     y_pred = predictor.predict(test_data)
     ```
 
+#### CKD factors
+
+* Feature importance
+
+    ```python
+    predictor.feature_importance(data=df_train)
+    ```
+
+* HeatMap
+
+    ```python
+    auto_ml_pipeline_feature_generator = AutoMLPipelineFeatureGenerator()
+    new_df = auto_ml_pipeline_feature_generator.fit_transform(X=df)
+
+    X=new_df.drop(['class'],axis=1)
+    y=new_df['class']
+
+    #get correlations of each features in dataset
+    corrmat = new_df.corr()
+    top_corr_features = corrmat.index
+    plt.figure(figsize=(20,20))
+
+    #plot heat map
+    g=sns.heatmap(new_df[top_corr_features].corr(),annot=True,cmap="RdYlGn")
+    ```
+
+#### CKD subtypes
+
+* Contributions
+
+    ```python
+    auto_ml_pipeline_feature_generator = AutoMLPipelineFeatureGenerator()
+    new_df = auto_ml_pipeline_feature_generator.fit_transform(X=df)
+    #new_df = new_df.dropna()
+    X=new_df.drop(['class'],axis=1)
+    columns = list(X.columns)
+    y=new_df['class']
+
+    #we create a basic lightGBM model :
+    X_train = lgm.Dataset(X, y)
+    parameters = {
+        "max_depth":3,
+        "random_state": 43
+    }
+
+    #we train our model
+    basic_model = lgm.train(parameters,train_set = X_train)
+
+    #We create a contributions table
+    contributions = basic_model.predict(X, pred_contrib = True)
+    dataframe_contributions = DataFrame(contributions, columns = columns+["expected_value"]).drop(['expected_value'], axis = 1)
+    ```
+
+* Clusters
+
+    ```python
+    # We'll be creating 5 clusters. 
+    kmeans = KMeans(n_clusters=5, random_state=0).fit(dataframe_contributions)
+
+    # We'll then proceed to create the dataframe we'll be using in our analysis. 
+    # I would like to use the original dataset for this (use feature values instead of contribution values ),
+    # and add columsn for target, prediction and KMeans cluster group. 
+
+    X["PREDICTION"] = basic_model.predict(X, predict_proba = True)
+    X['TARGET'] = y
+    X["KMEANS_CLUSTER"]= kmeans.predict(dataframe_contributions)
+    X['DIFF'] = X['TARGET']-X['PREDICTION']
+
+    num_values=X.groupby("KMEANS_CLUSTER").mean()
+    categorical_values=X.drop(list(num_values.columns),axis=1)
+    categorical_values=categorical_values.replace(np.nan, "NaN")
+    categorical_values=categorical_values.groupby("KMEANS_CLUSTER").apply(lambda x: x.mode(dropna =False))
+    Clusters =merge(num_values, categorical_values, left_index=True, right_index=True)
+    ```
 
 ## Authors
 
@@ -124,3 +208,5 @@ This project is licensed under the MIT License - see the LICENSE.md file for det
 * [DomPizzie](https://gist.github.com/DomPizzie/7a5ff55ffa9081f2de27c315f5018afc)
 * [GhostofGoes](https://gist.github.com/GhostofGoes/94580e76cd251972b15b4821c8a06f59)
 * [nicolasdao](https://gist.github.com/nicolasdao/a7adda51f2f185e8d2700e1573d8a633#mit-license)
+* [Rahil Shaikh](https://towardsdatascience.com/feature-selection-techniques-in-machine-learning-with-python-f24e7da3f36e)
+* [Ana Preciado](https://towardsdatascience.com/applying-a-clustering-algorithm-to-feature-contribution-3c649ab0ca17)
